@@ -1,0 +1,616 @@
+<style>
+:root{--bg:#0e0c0a;--surface:#161310;--card:#1c1814;--border:#2e2820;--accent:#c9a96e;--accent-soft:#c9a96e22;--text:#e8e0d4;--muted:#7a6e62;--green:#6db89a;--green-soft:#6db89a18;--red:#c97070;--red-soft:#c9707018;--blue:#7099c9;--blue-soft:#7099c918;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.7;min-height:100vh;}
+.container{max-width:920px;margin:0 auto;padding:24px 16px 60px;}
+.flow-banner{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.flow-banner-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-right:4px;white-space:nowrap;}
+.flow-step-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text);}
+.flow-step-badge .num{width:20px;height:20px;border-radius:50%;background:var(--accent-soft);border:1px solid #c9a96e40;color:var(--accent);font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:500;flex-shrink:0;}
+.flow-arrow{color:var(--border);font-size:14px;}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:24px;background:var(--surface);padding:3px;border-radius:10px;border:1px solid var(--border);}
+.tab{padding:8px 6px;border-radius:6px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:10.5px;font-weight:400;cursor:pointer;transition:all 0.2s;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tab:hover{color:var(--text);}
+.tab.active{background:var(--card);color:var(--accent);border:1px solid var(--border);}
+.sub-tabs{display:flex;gap:3px;margin:20px 0 12px;background:#0e0c0a;padding:3px;border-radius:8px;border:1px solid var(--border);}
+.sub-tab{flex:1;padding:7px 10px;border-radius:6px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:400;cursor:pointer;transition:all 0.2s;text-align:center;}
+.sub-tab:hover{color:var(--text);}
+.sub-tab.active{background:var(--card);color:var(--accent);border:1px solid var(--border);}
+.sub-section{display:none;}.sub-section.active{display:block;}
+.section{display:none;}.section.active{display:block;}
+.section-title{font-family:'Georgia',serif;font-size:22px;font-weight:400;color:var(--text);margin-bottom:5px;}
+.section-desc{font-size:12.5px;color:var(--muted);margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border);line-height:1.6;}
+.section-desc strong{color:var(--text);font-weight:500;}
+.when{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:3px 10px;border-radius:20px;margin-bottom:8px;}
+.when::before{content:'↗';color:var(--accent);font-size:10px;}
+.msg-block{margin-bottom:24px;}
+.msg-label{display:flex;align-items:center;gap:7px;margin-bottom:8px;flex-wrap:wrap;}
+.tag{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;font-weight:500;}
+.tag-trigger{background:var(--blue-soft);color:var(--blue);border:1px solid #7099c930;}
+.tag-resposta{background:var(--green-soft);color:var(--green);border:1px solid #6db89a30;}
+.tag-objecao{background:var(--red-soft);color:var(--red);border:1px solid #c9707030;}
+.tag-followup{background:var(--accent-soft);color:var(--accent);border:1px solid #c9a96e30;}
+.tag-auto{background:#a07ec918;color:#a07ec9;border:1px solid #a07ec930;}
+.msg-title{font-size:12px;font-weight:500;color:var(--muted);}
+.msg-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 20px 18px;position:relative;}
+.msg-card p{font-size:13.5px;line-height:1.85;color:#cfc8be;white-space:pre-line;padding-top:32px;}
+.msg-card .hl{color:var(--accent);font-style:italic;}
+.copy-btn{position:absolute;top:12px;right:12px;background:var(--border);border:none;color:var(--muted);font-size:10px;padding:4px 10px;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.copy-btn:hover{background:var(--accent);color:var(--bg);}
+.copy-btn.copied{background:var(--green);color:var(--bg);}
+.tip{background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin-top:8px;font-size:12px;color:#c9a96ecc;line-height:1.6;}
+.divider{border:none;border-top:1px solid var(--border);margin:24px 0;}
+.price-table{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:22px;}
+.price-row{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);gap:12px;}
+.price-row:last-child{border-bottom:none;}
+.price-name{font-size:13px;color:var(--text);}
+.price-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+.price-val{font-family:'Georgia',serif;font-size:20px;color:var(--accent);white-space:nowrap;}
+.diff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-bottom:22px;}
+.diff-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.diff-icon{font-size:16px;margin-bottom:6px;}
+.diff-title{font-size:12px;font-weight:500;color:var(--accent);margin-bottom:4px;}
+.diff-text{font-size:11.5px;color:var(--muted);line-height:1.5;}
+.edit-bar{display:flex;justify-content:flex-end;gap:8px;padding:16px;position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--border);}
+.edit-btn{padding:10px 18px;border-radius:10px;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+</style>
+
+<div style="text-align:center;padding:48px 20px 36px;border-bottom:1px solid #2e2820;background:#0e0c0a;width:100%;">
+  <div style="font-family:Georgia,serif;font-size:clamp(32px,5vw,52px);font-weight:300;color:#e8e0d4;text-align:center;line-height:1.2;">Método <em style="font-style:italic;color:#c9a96e;">Conversão Magnética™</em></div>
+  <div style="margin-top:12px;color:#7a6e62;font-size:13px;text-align:center;">Desenvolvido pela Psicóloga Keidi Masera · CRP 07/22726</div>
+</div>
+
+<div class="container">
+  <div class="flow-banner">
+    <span class="flow-banner-label">Sequência obrigatória</span>
+    <div class="flow-step-badge"><span class="num">1</span> Acolhimento</div>
+    <span class="flow-arrow">›</span>
+    <div class="flow-step-badge"><span class="num">2</span> Escuta da Dor</div>
+    <span class="flow-arrow">›</span>
+    <div class="flow-step-badge"><span class="num">3</span> Autoridade</div>
+    <span class="flow-arrow">›</span>
+    <div class="flow-step-badge"><span class="num">4</span> Investimento</div>
+    <span class="flow-arrow">›</span>
+    <div class="flow-step-badge"><span class="num">5</span> Objeções</div>
+    <span class="flow-arrow">›</span>
+    <div class="flow-step-badge"><span class="num">6</span> Agendamento</div>
+    <span class="flow-arrow">›</span>
+    <div class="flow-step-badge"><span class="num">7</span> 1ª Sessão</div>
+    <span class="flow-arrow">›</span>
+    <div class="flow-step-badge"><span class="num">8</span> Retenção</div>
+    <span class="flow-arrow">›</span>
+    <div class="flow-step-badge"><span class="num">9</span> Follow-up</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('acolhimento',this)">1. Acolhimento</button>
+    <button class="tab" onclick="showTab('escuta',this)">2. Escuta da Dor</button>
+    <button class="tab" onclick="showTab('autoridade',this)">3. Autoridade</button>
+    <button class="tab" onclick="showTab('preco',this)">4. Investimento</button>
+    <button class="tab" onclick="showTab('objecoes',this)">5. Objeções</button>
+    <button class="tab" onclick="showTab('agendamento',this)">6. Agendamento</button>
+    <button class="tab" onclick="showTab('primeirasessao',this)">7. 1ª Sessão</button>
+    <button class="tab" onclick="showTab('retencao',this)">8. Retenção</button>
+    <button class="tab" onclick="showTab('followup',this)">9. Follow-up</button>
+  </div>
+
+  <div class="section active" id="acolhimento">
+    <div class="section-title">Passo 1, Acolhimento</div>
+    <p class="section-desc">O primeiro contato não é sobre você. É sobre fazer o paciente sentir que <strong>finalmente chegou ao lugar certo.</strong> Sem currículo, sem preço. Só presença.</p>
+    <div class="msg-block">
+      <div class="when">Qualquer primeiro contato genérico</div>
+      <div class="msg-label"><span class="tag tag-trigger">1º contato genérico</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Olá, que bom ter você aqui. 🤍
+
+Sei que chegar até esse passo não é simples. Às vezes a gente carrega algo por muito tempo antes de decidir buscar ajuda. E o simples fato de você estar aqui já diz muito.
+
+Antes de qualquer coisa, quero te conhecer um pouco.
+
+<span class="hl">O que está te trazendo até aqui hoje?</span> Pode me contar do seu jeito, sem pressa, sem precisar ter tudo organizado na cabeça.</p>
+      </div>
+      <div class="tip">💡 <strong>Gatilhos:</strong> Validação emocional antes de qualquer informação. O paciente se sente visto antes de saber quem você é. Isso cria preferência imediata.</div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Paciente veio por indicação</div>
+      <div class="msg-label"><span class="tag tag-trigger">Veio por indicação</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Que alegria receber sua mensagem! 🤍
+
+Quando alguém de confiança indica esse espaço, é porque sentiu na pele que valeu a pena. Isso me toca muito, porque significa que o trabalho chegou de verdade a quem precisava.
+
+E agora você está aqui. Isso não é por acaso.
+
+<span class="hl">Me conta: o que está pesando mais para você nesse momento?</span> Pode ser à vontade, sem formalidades.</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Paciente veio pelas redes sociais</div>
+      <div class="msg-label"><span class="tag tag-trigger">Veio pelas redes sociais</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Olá, que bom ter você aqui! 🤍
+
+Me conta uma coisa: o que foi que te fez parar e chegar até aqui? Às vezes é um conteúdo, às vezes é uma frase, às vezes é simplesmente uma sensação de que aquilo estava falando diretamente com você.
+
+<span class="hl">O que está acontecendo na sua vida que te trouxe até esse momento?</span></p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div style="margin-bottom:4px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);">Resposta à dor relatada</div>
+    <div class="sub-tabs">
+      <button class="sub-tab active" onclick="showSubTab('ansiedade',this)">Ansiedade</button>
+      <button class="sub-tab" onclick="showSubTab('outrasdores',this)">Outras queixas</button>
+    </div>
+    <div class="sub-section active" id="ansiedade">
+      <div class="msg-block">
+        <div class="when">Paciente relatou sofrimento com ansiedade</div>
+        <div class="msg-label"><span class="tag tag-resposta">Resposta à dor: ansiedade</span></div>
+        <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+          <p>Obrigada por confiar em mim com isso. Eu sei o quanto é difícil colocar em palavras algo que muitas vezes parece impossível de explicar para quem está de fora.
+
+Mas eu entendo. E mais do que entender, eu reconheço exatamente o que você está descrevendo.
+
+<span class="hl">A [SUA ESPECIALIDADE] tem uma forma muito específica de funcionar</span>, de sequestrar os pensamentos, de travar o corpo, de fazer a mente trabalhar contra você. E o que poucas pessoas sabem é que isso não é fraqueza, não é frescura e não é algo que você precisa simplesmente controlar. É um padrão. E padrões têm solução.
+
+<span class="hl">Você veio ao lugar certo.</span>
+
+Posso te contar como eu trabalho?</p>
+        </div>
+      </div>
+    </div>
+    <div class="sub-section" id="outrasdores">
+      <div class="msg-block">
+        <div class="when">Tristeza, relacionamentos, luto, autoestima, depressão, etc.</div>
+        <div class="msg-label"><span class="tag tag-resposta">Resposta à dor: outras queixas</span></div>
+        <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+          <p>Obrigada por compartilhar isso comigo. Eu sei que não é fácil, e que muitas vezes a gente chega num ponto em que as palavras ainda não dão conta do que está sentindo por dentro.
+
+<span class="hl">O que você descreveu não precisa ser o jeito como você vai continuar se sentindo.</span> Existe um caminho para sair desse lugar. Com método, com presença e com ferramentas reais para a sua vida.
+
+Posso te contar como eu trabalho?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="escuta">
+    <div class="section-title">Passo 2, Escuta da Dor</div>
+    <p class="section-desc">Aprofunde a escuta, faça as perguntas certas e colete o máximo sobre a dor do paciente.</p>
+    <div class="msg-block">
+      <div class="when">Paciente relatou ansiedade de forma genérica</div>
+      <div class="msg-label"><span class="tag tag-resposta">Aprofundamento da queixa</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Para que eu possa te entender melhor, posso te fazer mais uma pergunta?
+
+<span class="hl">Quando você diz que está ansioso, como isso aparece no seu dia a dia?</span> É mais nos pensamentos, no corpo, nas situações que você evita, nas noites sem dormir?</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Você quer entender o impacto na vida dele</div>
+      <div class="msg-label"><span class="tag tag-resposta">Entendendo o impacto real</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Faz sentido o que você está descrevendo.
+
+<span class="hl">Em que área da sua vida isso está afetando mais?</span> No trabalho, nos relacionamentos, no sono, na sua capacidade de aproveitar as coisas que você gosta?</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Paciente está pronto para avançar</div>
+      <div class="msg-label"><span class="tag tag-resposta">Transição para os diferenciais</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Com o que você descreveu, consigo te dizer com segurança que é exatamente esse tipo de situação que eu trabalho, e que tem solução com o processo certo.
+
+<span class="hl">Posso te contar como funciona o meu atendimento?</span></p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Paciente fechado ou responde pouco</div>
+      <div class="msg-label"><span class="tag tag-trigger">Paciente resistente ou tímido</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Tudo bem, não precisa me contar mais do que você se sentir confortável em compartilhar agora.
+
+<span class="hl">O espaço terapêutico existe justamente para isso: para ajudar a organizar o que está dentro.</span>
+
+Posso te contar um pouco sobre como funciona o meu trabalho?</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="autoridade">
+    <div class="section-title">Passo 3, Autoridade e Diferenciais</div>
+    <p class="section-desc"><strong>Só apresente o preço depois dessa etapa.</strong> Aqui você constrói o valor.</p>
+    <div class="diff-grid">
+      <div class="diff-card"><div class="diff-icon">⏱</div><div class="diff-title">1 hora completa</div><div class="diff-text">Não 40, não 45 minutos. Uma hora inteira, sem pressa, sem corte.</div></div>
+      <div class="diff-card"><div class="diff-icon">💻</div><div class="diff-title">Online com eficácia comprovada</div><div class="diff-text">Validado pelo CRP. Mesma eficácia do presencial.</div></div>
+      <div class="diff-card"><div class="diff-icon">📲</div><div class="diff-title">Suporte entre sessões</div><div class="diff-text">WhatsApp aberto. Dúvida, crise, insight, pode chamar.</div></div>
+      <div class="diff-card"><div class="diff-icon">🧠</div><div class="diff-title">Aplicação prática</div><div class="diff-text">Você sai de cada sessão com algo concreto para usar agora.</div></div>
+      <div class="diff-card"><div class="diff-icon">🎯</div><div class="diff-title">Atuação especializada em [SUA ESPECIALIDADE]</div><div class="diff-text">[PERCENTUAL]% dos mais de [NÚMERO] atendimentos foram casos de [SUA ESPECIALIDADE].</div></div>
+      <div class="diff-card"><div class="diff-icon">🔑</div><div class="diff-title">Autonomia como objetivo</div><div class="diff-text">O objetivo é você virar seu próprio terapeuta.</div></div>
+    </div>
+    <div class="msg-block">
+      <div class="when">Paciente perguntou "como funciona?"</div>
+      <div class="msg-label"><span class="tag tag-resposta">Apresentação completa dos diferenciais</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Deixa eu te contar como funciona, porque é bem diferente do que a maioria imagina quando pensa em terapia.
+
+⏱ <span class="hl">As sessões têm 1 hora completa.</span> Não 40, não 45 minutos. Uma hora inteira, porque acredito que você merece um espaço de verdade, sem pressa.
+
+💻 O atendimento é online, por videochamada. Validado pelo Conselho Federal de Psicologia e com eficácia comprovada igual ao presencial.
+
+📲 <span class="hl">E o meu suporte não termina quando a sessão acaba.</span> Meu WhatsApp fica disponível entre os atendimentos. Você não fica sozinho de uma semana para a outra.
+
+🧠 A minha atuação é dentro da abordagem da [SUA ABORDAGEM]. Um dos meus grandes diferenciais é a aplicabilidade: você não sai de uma sessão só com reflexões. Você sai com técnicas, ferramentas e tarefas concretas.
+
+🎯 <span class="hl">A minha atuação é especializada em [SUA ESPECIALIDADE].</span> Dos mais de [NÚMERO] pacientes atendidos, cerca de [PERCENTUAL]% eram casos de [SUA ESPECIALIDADE]. Entre aqueles que se comprometem com o processo, mais de [PERCENTUAL RESULTADOS]% alcançaram mudanças concretas e duradouras.
+
+🔑 <span class="hl">O meu grande objetivo é que você se torne o seu próprio terapeuta.</span> Autonomia real, não dependência.
+
+Essas estratégias e diferenciais fazem sentido para o que você está buscando?</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Paciente hesita ou demonstra desconfiança</div>
+      <div class="msg-label"><span class="tag tag-auto">Script de autoridade máxima</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Posso te falar com honestidade?
+
+A maioria das pessoas que chega até mim já tentou algo antes. Terapia que não avançou, profissional que ficava em silêncio esperando, processo que durou anos sem resultado concreto.
+
+O que eu faço é diferente. <span class="hl">Sou direta. Participativa. Você não vai precisar de meses para entender o que está acontecendo com você.</span>
+
+Isso não é promessa. É [SEU TEMPO] anos de prática e mais de [NÚMERO] atendimentos. 🤍</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="preco">
+    <div class="section-title">Passo 4, Apresentação do Investimento</div>
+    <p class="section-desc"><strong>Só chegue aqui depois de ter construído autoridade e valor.</strong> O preço nunca vem sozinho.</p>
+    <div class="price-table">
+      <div class="price-row"><div><div class="price-name">Sessão avulsa</div><div class="price-desc">Para quem quer conhecer o processo</div></div><div class="price-val">R$ [VALOR AVULSO]</div></div>
+      <div class="price-row"><div><div class="price-name">Pacote semanal</div><div class="price-desc">Por sessão · frequência semanal · recomendado</div></div><div class="price-val">R$ [VALOR PACOTE]</div></div>
+      <div class="price-row"><div><div class="price-name">Ex-paciente retornando</div><div class="price-desc">Histórico já construído, retorno facilitado</div></div><div class="price-val">R$ [VALOR EX-PACIENTE]</div></div>
+    </div>
+    <div class="msg-block">
+      <div class="when">Após apresentar os diferenciais</div>
+      <div class="msg-label"><span class="tag tag-resposta">Apresentação do investimento</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Tudo o que te contei até aqui faz parte de um processo construído para gerar resultado real.
+
+E esse processo tem um investimento.
+
+📌 <span class="hl">Sessão avulsa: R$ [VALOR AVULSO]</span>
+📌 <span class="hl">Pacote semanal: R$ [VALOR PACOTE] por sessão</span>
+
+<span class="hl">Pensa comigo: o que você está deixando de viver por causa dessa dor emocional?</span>
+
+Tratar tem um investimento. Não tratar tem um preço. E esse preço você já conhece.
+
+<span class="hl">Qual investimento faz mais sentido para você assumir agora: o de continuar como está, ou o de mudar?</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="objecoes">
+    <div class="section-title">Passo 5, Manejo de Objeções</div>
+    <p class="section-desc">Para cada resistência, existe uma resposta. A regra de ouro: <strong>nunca confronte a objeção diretamente. Valide, ressignifique, redirecione.</strong></p>
+    <div class="msg-block">
+      <div class="when">Paciente diz que o valor está alto</div>
+      <div class="msg-label"><span class="tag tag-objecao">Objeção 1</span><span class="msg-title">"Está caro"</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Eu entendo, e respeito muito essa honestidade.
+
+<span class="hl">O quanto essa dor já te custou até hoje?</span> Oportunidades que você deixou passar. Noites mal dormidas. Relacionamentos afetados. Esse custo é real, só não vem com etiqueta de preço.
+
+Me conta melhor o que está te impedindo.</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Paciente diz que precisa pensar</div>
+      <div class="msg-label"><span class="tag tag-objecao">Objeção 2</span><span class="msg-title">"Vou pensar melhor"</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Claro, sem nenhuma pressão 🤍
+
+<span class="hl">A maioria das pessoas que chega até mim passou meses só pensando. E todas dizem que gostariam ter dado o passo antes.</span>
+
+Quando você sentir que é a hora, estarei aqui. 😊</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Precisa consultar parceiro ou família</div>
+      <div class="msg-label"><span class="tag tag-objecao">Objeção 3</span><span class="msg-title">"Preciso falar com meu marido/família"</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Claro, faz todo sentido. Só quero deixar uma reflexão: <span class="hl">cuidar da sua saúde mental é uma decisão sua. A terapia também é um cuidado seu, com você.</span>
+
+Se quiser, me conta o que ainda está pesando para você.</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Nunca fez terapia</div>
+      <div class="msg-label"><span class="tag tag-objecao">Objeção 4</span><span class="msg-title">"Nunca fiz terapia"</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p><span class="hl">Você não precisa saber se terapia é para você antes de começar. Você só precisa dar o primeiro passo.</span>
+
+O que te impede de tentar uma vez?</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Já tentou terapia e não funcionou</div>
+      <div class="msg-label"><span class="tag tag-objecao">Objeção 5</span><span class="msg-title">"Já fiz terapia e não funcionou"</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Isso que você disse importa muito, e eu levo a sério.
+
+<span class="hl">A [SUA ABORDAGEM] é estruturada, ativa e focada em resultado.</span> A gente identifica padrões e constrói mudanças concretas, sessão a sessão.
+
+Me conta: o que você sentia que faltava na experiência anterior?</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Psicólogo anterior ficava em silêncio</div>
+      <div class="msg-label"><span class="tag tag-objecao">Objeção 6</span><span class="msg-title">"Minha psicóloga não falava nada"</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p><span class="hl">Meu trabalho é completamente diferente. Sou participativa e direta.</span> Você não vai sair de uma sessão comigo sem clareza e sem direção. 🤍</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Dificuldade de se abrir com estranhos</div>
+      <div class="msg-label"><span class="tag tag-objecao">Objeção 7</span><span class="msg-title">"Não consigo me abrir"</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p><span class="hl">Você não precisa se abrir de uma vez. O processo é gradual, construído na confiança e no ritmo que faz sentido para você.</span>
+
+O que você perderia em tentar uma sessão?</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Não sabe se é o momento certo</div>
+      <div class="msg-label"><span class="tag tag-objecao">Objeção 8</span><span class="msg-title">"Não sei se é o momento certo"</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p><span class="hl">O momento certo é quando você reconhece que algo precisa mudar. E você já reconheceu isso, é por isso que está aqui.</span>
+
+Você já deu o passo mais difícil. O próximo é só dar uma chance.</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Pede garantias de resultado</div>
+      <div class="msg-label"><span class="tag tag-objecao">Objeção 9</span><span class="msg-title">"Como vou saber se vou melhorar?"</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p><span class="hl">Um histórico real.</span> Dos pacientes com [SUA ESPECIALIDADE] que se comprometeram com o processo, mais de [PERCENTUAL RESULTADOS]% tiveram resultados concretos e duradouros.
+
+Resultados assim não acontecem por acaso. 🤍</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Não tem tempo</div>
+      <div class="msg-label"><span class="tag tag-objecao">Objeção 10</span><span class="msg-title">"Não tenho tempo"</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p><span class="hl">1 hora por semana, de onde você estiver, sem deslocamento.</span>
+
+Me conta: qual seria o horário menos impactante para a sua rotina?</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Prefere presencial</div>
+      <div class="msg-label"><span class="tag tag-objecao">Objeção 11</span><span class="msg-title">"Prefiro presencial"</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>O atendimento online é validado pelo CFP e tem eficácia igual ao presencial.
+
+<span class="hl">Você está no seu próprio ambiente. Muitos pacientes relatam que conseguem se abrir mais, justamente porque estão num lugar seguro para eles.</span>
+
+Tenta uma sessão. O que você tem a perder?</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="agendamento">
+    <div class="section-title">Passo 6, Agendamento</div>
+    <p class="section-desc">Paciente disse sim. Confirme com agilidade e garanta que ele chegue na primeira sessão tranquilo e preparado.</p>
+    <div class="msg-block">
+      <div class="when">Paciente confirmou interesse</div>
+      <div class="msg-label"><span class="tag tag-resposta">Agendamento</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Que alegria receber o seu sim! 🤍
+
+Vou te passar os horários disponíveis essa semana:
+📅 [listar horários]
+
+Qual funciona melhor para você?</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Após pagamento confirmado</div>
+      <div class="msg-label"><span class="tag tag-resposta">Confirmação + boas-vindas</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Tudo confirmado! 🤍
+
+📅 Sessão: [dia] às [horário]
+🔗 Link: [link da videochamada]
+
+Você não precisa chegar com nada organizado. <span class="hl">Pode chegar como você está, do jeito que estiver.</span> Não há julgamento aqui.
+
+Te vejo [dia]! 🤍</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">No dia anterior à sessão</div>
+      <div class="msg-label"><span class="tag tag-followup">Lembrete, 1 dia antes</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Oi! Nossa sessão é amanhã, [dia] às [horário] 🤍
+🔗 [link]
+
+Se precisar reagendar, me avisa. Te vejo amanhã!</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Paciente cancela ou não aparece</div>
+      <div class="msg-label"><span class="tag tag-objecao">Cancelamento ou falta</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Oi [nome], tudo bem? Percebi que você não conseguiu estar na nossa sessão de hoje.
+
+<span class="hl">Quero entender como você está</span> e, quando fizer sentido, a gente reagenda. 🤍</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="primeirasessao">
+    <div class="section-title">Passo 7, Primeira Sessão e Pós-Sessão</div>
+    <p class="section-desc">Como preparar o paciente para chegar bem na primeira sessão, e como cuidar do vínculo nas 24h depois dela.</p>
+    <div class="msg-block">
+      <div class="when">Enviar após confirmação do agendamento</div>
+      <div class="msg-label"><span class="tag tag-resposta">Orientações pré-sessão</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Para que a nossa sessão aconteça da melhor forma possível:
+
+🎧 <span class="hl">Use fone de ouvido.</span> Garante mais privacidade e qualidade de áudio.
+🚪 <span class="hl">Esteja num ambiente privado e sem interrupções.</span>
+⏱ <span class="hl">Reserve a hora completa só para a sessão.</span>
+📱 <span class="hl">Acesse o link com alguns minutos de antecedência.</span>
+
+Te vejo [dia] às [horário]! 🤍</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">No dia seguinte à primeira sessão</div>
+      <div class="msg-label"><span class="tag tag-followup">Pós-primeira sessão, 24h depois</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Oi! Passando para saber como você está depois da nossa sessão de ontem 🤍
+
+É normal sentir um mix de sensações após o primeiro encontro. Tudo isso faz parte do processo.
+
+<span class="hl">Como você está se sentindo?</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="retencao">
+    <div class="section-title">Passo 8, Retenção e Encerramento</div>
+    <p class="section-desc">Scripts para os momentos mais delicados: o paciente que some, o encerramento bem feito e a despedida que gera indicações.</p>
+    <div class="msg-block">
+      <div class="when">Paciente some após algumas sessões</div>
+      <div class="msg-label"><span class="tag tag-followup">Paciente que sumiu no meio do processo</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Oi [nome], tudo bem? 🤍
+
+Percebi que faz um tempo que não nos falamos, e vim checar como você está.
+
+<span class="hl">Se quiser retomar, estou aqui. Se quiser só conversar antes de decidir, também.</span>
+
+Cuide-se. 🤍</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Paciente quer encerrar o processo</div>
+      <div class="msg-label"><span class="tag tag-resposta">Encerramento do processo</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Que momento lindo de reconhecer, [nome]. Fico muito feliz em ouvir isso.
+
+Encerrar um processo terapêutico é em si um sinal de amadurecimento. Foi uma honra acompanhar essa jornada com você. 🤍
+
+<span class="hl">Que tal agendarmos uma última sessão de encerramento?</span></p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Após a última sessão</div>
+      <div class="msg-label"><span class="tag tag-followup">Mensagem de despedida</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Foi muito bonito esse processo com você, [nome]. Obrigada pela confiança e pela entrega.
+
+Você chegou buscando uma saída da sua dor. E saiu com algo muito maior.
+
+<span class="hl">Se um dia sentir que quer retomar, estarei aqui.</span> Sem cerimônia, sem julgamento.
+
+Cuide-se com o mesmo carinho com que você cuidou desse processo. 🤍</p>
+      </div>
+      <div class="tip">💡 Uma despedida bem feita é o maior gerador de indicações espontâneas que existe.</div>
+    </div>
+  </div>
+
+  <div class="section" id="followup">
+    <div class="section-title">Passo 9, Follow-up e Reativação</div>
+    <p class="section-desc">Paciente demonstrou interesse e sumiu? <strong>Nunca pressione. Plante.</strong></p>
+    <div class="msg-block">
+      <div class="when">24 horas sem resposta</div>
+      <div class="msg-label"><span class="tag tag-followup">Follow-up 1, 24h</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Oi! Vi que você não chegou a responder, tudo bem? 😊
+
+Sem pressão. Se surgiu alguma dúvida ou quiser conversar antes de decidir, pode me chamar.</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">3 dias sem resposta</div>
+      <div class="msg-label"><span class="tag tag-followup">Follow-up 2, 3 dias</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Oi, tudo bem? 🤍
+
+A gente costuma adiar o cuidado com a saúde mental justamente quando mais precisa dele.
+
+<span class="hl">Se for isso que está acontecendo, saiba que é exatamente para isso que o processo existe.</span>
+
+Quando você sentir que é a hora, estou aqui.</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">7 dias sem resposta, última tentativa</div>
+      <div class="msg-label"><span class="tag tag-followup">Follow-up 3, 7 dias</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Oi! Última mensagem por aqui, prometo 😊
+
+<span class="hl">Você já deu o passo mais difícil, que foi buscar. O próximo é só decidir.</span>
+
+Cuide-se. 🤍</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="msg-block">
+      <div class="when">Ex-paciente que sumiu há meses</div>
+      <div class="msg-label"><span class="tag tag-followup">Reativação, ex-paciente</span></div>
+      <div class="msg-card"><button class="copy-btn" onclick="copyMsg(this)">Copiar</button>
+        <p>Oi [nome]! Tudo bem? 🤍
+
+Passando para dar um oi e saber como você está.
+
+Se em algum momento sentir que quer retomar, é só me chamar. Para quem já passou pelo processo comigo, o valor é R$ [VALOR EX-PACIENTE] por sessão.
+
+Cuide-se! 😊</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="edit-bar">
+  <button class="edit-btn" id="saveBtn" onclick="saveEdits()" style="display:none;background:#6db89a;color:#0e0c0a;">💾 Salvar</button>
+  <button class="edit-btn" id="editBtn" onclick="toggleEdit()" style="background:#c9a96e;color:#0e0c0a;">✏️ Editar</button>
+</div>
+
+<script>
+function showSubTab(id,el){document.querySelectorAll('.sub-section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.sub-tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');el.classList.add('active');}
+function showTab(id,el){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');el.classList.add('active');}
+function copyMsg(btn){const p=btn.closest('.msg-card').querySelector('p');const d=document.createElement('div');d.innerHTML=p.innerHTML;d.querySelectorAll('span').forEach(s=>s.replaceWith(document.createTextNode(s.textContent)));const t=d.textContent.trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copiado ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('copied');},2000);}).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.textContent='Copiado ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('copied');},2000);});}
+var editing=false;
+function toggleEdit(){editing=!editing;const btn=document.getElementById('editBtn');const sb=document.getElementById('saveBtn');document.querySelectorAll('.msg-card p,.section-title').forEach(el=>{el.contentEditable=editing?'true':'false';el.style.outline=editing?'1px dashed #c9a96e55':'none';});btn.textContent=editing?'✕ Sair':'✏️ Editar';btn.style.background=editing?'#c97070':'#c9a96e';sb.style.display=editing?'block':'none';}
+function saveEdits(){const data={};document.querySelectorAll('.msg-card p,.section-title').forEach((el,i)=>{data['el_'+i]=el.innerHTML;});try{localStorage.setItem('edits',JSON.stringify(data));}catch(e){}const btn=document.getElementById('saveBtn');btn.textContent='✓ Salvo!';setTimeout(()=>{btn.textContent='💾 Salvar';},2000);}
+window.addEventListener('load',function(){try{const saved=localStorage.getItem('edits');if(saved){const data=JSON.parse(saved);document.querySelectorAll('.msg-card p,.section-title').forEach((el,i)=>{if(data['el_'+i])el.innerHTML=data['el_'+i];});}}catch(e){}});
+</script>
